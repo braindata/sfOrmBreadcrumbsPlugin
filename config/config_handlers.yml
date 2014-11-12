@@ -1,0 +1,4 @@
+config/breadcrumbs.yml:
+  class: sfSimpleYamlConfigHandler
+  param:
+    prefix: breadcrumbs_

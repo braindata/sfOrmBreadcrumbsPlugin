@@ -35,7 +35,7 @@ abstract class sfOrmBreadcrumbs
   {
     if($this->config == null)
     {
-      $file = sfConfig::get('sf_app_config_dir').'/breadcrumbs.yml';
+      $file = sfContext::getInstance()->getConfiguration()->getConfigCache()->checkConfig('config/breadcrumbs.yml');
       $yml = sfYamlConfigHandler::parseYaml($file);
       sfConfig::add($yml);
       
