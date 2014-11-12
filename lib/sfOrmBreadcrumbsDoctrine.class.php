@@ -31,7 +31,11 @@ class sfOrmBreadcrumbsDoctrine extends sfOrmBreadcrumbs
       if(method_exists($route_object, $name)) {
         $name = $route_object->$name();
       } else {
-        $name = $route_object->get($name);
+        try {
+          $name = $route_object->get($name);
+        } catch (Exception $e) {
+          $name = $item['name'];
+        }
       }
 
       $breadcrumb = array('name' => $name, 'url' => isset($item['route']) ? $routing->generate($item['route'], $route_object) : null);
