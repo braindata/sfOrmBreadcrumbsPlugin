@@ -17,27 +17,32 @@ class sfOrmBreadcrumbsDoctrine extends sfOrmBreadcrumbs
     if(isset($item['model']) && $item['model'] == true)
     {
       $object = $request->getAttribute('sf_route')->getObject(); 
-      if(isset($item['subobject']))
-      {
+      if(isset($item['subobject'])) {
         $subobject = $object->get($item['subobject']);
         $route_object = $subobject;
-      }
-      else 
-      {
+      } else {
         $route_object = $object;
       }
+      $pattern = '/%(\w+)%/e';
+      preg_match_all($pattern, $item['name'], $matches);
 
-      $name = preg_replace('/%(\w+)%/e', '"$1"', $item['name']);
-      if(method_exists($route_object, $name)) {
-        $name = $route_object->$name();
-      } else {
-        try {
-          $name = $route_object->get($name);
-        } catch (Exception $e) {
-          $name = $item['name'];
+      if(!empty($matches)) {
+        $replaces = array();
+
+        foreach($matches[1] as $idx => $match) {
+          if(method_exists($route_object, $match)) {
+            $replaces[$idx] = $route_object->$match();
+          } else {
+            try {
+              $replaces[$idx] = $route_object->get($match);
+            } catch (Exception $e) {
+              $replaces[$idx] = $matches[0][$idx];
+            }
+          }
         }
       }
-
+      //var_dump($matches, $replaces); die;
+      $name = !empty($matches) ? str_replace($matches[0], $replaces, $item['name']) : $item['name'];
       $breadcrumb = array('name' => $name, 'url' => isset($item['route']) ? $routing->generate($item['route'], $route_object) : null);
     }
     else 
