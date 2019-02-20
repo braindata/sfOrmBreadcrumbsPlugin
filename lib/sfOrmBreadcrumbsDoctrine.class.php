@@ -23,7 +23,7 @@ class sfOrmBreadcrumbsDoctrine extends sfOrmBreadcrumbs
       } else {
         $route_object = $object;
       }
-      $pattern = '/%(\w+)%/e';
+      $pattern = '/%(\w+)%/';
       preg_match_all($pattern, $item['name'], $matches);
 
       if(!empty($matches)) {
