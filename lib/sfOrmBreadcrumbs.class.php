@@ -18,11 +18,18 @@ abstract class sfOrmBreadcrumbs
 
   abstract protected function buildBreadcrumb($v);
   
-  public function __construct($module, $action)
+  public function __construct($module, $action, $scope = null)
   {
     $this->module = $module;
     $this->action = $action;
-    
+    $this->scope  = $scope;
+
+    if ($this->scope){
+      $this->module_scope = sprintf("%s_%s", $this->module, $this->scope);
+    } else {
+      $this->module_scope = "";
+    }
+
     $this->getConfig();
     $this->buildBreadcrumbs();
 
@@ -58,15 +65,15 @@ abstract class sfOrmBreadcrumbs
   
   protected function buildBreadcrumbs()
   {
-    if(isset($this->config[$this->module]) && isset($this->config[$this->module][$this->action]))
+    if($this->scope && isset($this->config[$this->module_scope]) && isset($this->config[$this->module_scope][$this->action]))
+    {
+      $breadcrumbs_struct = $this->config[$this->module_scope][$this->action];
+    }
+    elseif(isset($this->config[$this->module]) && isset($this->config[$this->module][$this->action]))
     {
       $breadcrumbs_struct = $this->config[$this->module][$this->action];
     }
-    else
-    {
-      $breadcrumbs_struct = array();
-    }
-    
+
     if(count($breadcrumbs_struct) > 0)
     {
       foreach($breadcrumbs_struct as $item)
@@ -97,13 +104,13 @@ abstract class sfOrmBreadcrumbs
   {
     $case = isset($item['case']) ? $item['case'] : null;
 	
-	if($case == null)
-	{  
-      $config = $this->getConfig();
-      $case = isset($config['_default_case']) ? $config['_default_case'] : null;
-	}
-	
-	return $case;
+    if($case == null)
+    {
+        $config = $this->getConfig();
+        $case = isset($config['_default_case']) ? $config['_default_case'] : null;
+    }
+
+    return $case;
   }
   
   protected function switchCase($name, $case)

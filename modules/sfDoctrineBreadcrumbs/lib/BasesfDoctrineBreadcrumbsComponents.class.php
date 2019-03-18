@@ -12,8 +12,15 @@ class BasesfDoctrineBreadcrumbsComponents extends sfComponents
   {
     $module = $this->getContext()->getModuleName();
     $action = $this->getContext()->getActionName();
-    
-    $sf_orm_bc = new sfOrmBreadcrumbsDoctrine($module, $action);    
+
+    if ($request->hasParameter('scope')){
+      $this->scope = $request->getParameter('scope');
+    } else {
+      $this->scope = null;
+    }
+
+    $sf_orm_bc = new sfOrmBreadcrumbsDoctrine($module, $action, $this->scope);
+
     $this->breadcrumbs = $sf_orm_bc->getBreadcrumbs();
     $this->separator = $sf_orm_bc->getSeparator();
   }
